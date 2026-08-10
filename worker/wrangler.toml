@@ -1,0 +1,13 @@
+name = "rate-my-robot"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+account_id = "d4b834199be0b540ab362c7fe0c3227b"
+
+[[kv_namespaces]]
+binding = "GALLERY"
+id = "PLACEHOLDER_KV_ID"
+
+[vars]
+ENVIRONMENT = "production"
