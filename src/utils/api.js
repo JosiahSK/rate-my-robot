@@ -1,5 +1,5 @@
 // Cloudflare Worker URL — set this after deploying the worker
-export const WORKER_URL = import.meta.env.VITE_WORKER_URL || 'https://rate-my-robot.rate-my-robot-worker.workers.dev';
+export const WORKER_URL = import.meta.env.VITE_WORKER_URL || 'https://rate-my-robot.josiahsk.workers.dev';
 
 /**
  * Send an image to the Cloudflare Worker, which proxies to Gemini
