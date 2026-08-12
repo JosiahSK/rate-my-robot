@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { Upload, Loader, CheckCircle, AlertTriangle } from 'lucide-react';
 import { rateRobot, submitToGallery } from '../utils/api';
 import { getProfile, saveProfile, updateStreak, checkAndAwardBadges } from '../utils/profile';
 import ScoreCard from '../components/ScoreCard';
@@ -8,7 +9,7 @@ import Confetti from '../components/Confetti';
 const STEPS = ['Upload', 'Analyzing', 'Result'];
 
 export default function RatePage() {
-  const [step, setStep] = useState('upload'); // 'upload' | 'rating' | 'result'
+  const [step, setStep] = useState('upload');
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState(null);
@@ -43,8 +44,6 @@ export default function RatePage() {
     try {
       const data = await rateRobot(file);
       setResult(data);
-
-      // Gamification
       let profile = getProfile();
       profile = updateStreak(profile);
       profile.uploads = [
@@ -54,7 +53,6 @@ export default function RatePage() {
       const { profile: updated, newBadges: earned } = checkAndAwardBadges(profile);
       saveProfile(updated);
       setNewBadges(earned);
-
       setStep('result');
       if (data.overall_score >= 70) {
         setShowConfetti(true);
@@ -100,9 +98,8 @@ export default function RatePage() {
       <Confetti active={showConfetti} />
 
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="section-title">🤖 Rate My Robot</h1>
+          <h1 className="section-title">Rate My Robot</h1>
           <p className="text-gray-400">Upload a photo of your build. Our AI judge will score it and deliver a verdict.</p>
         </div>
 
@@ -115,7 +112,10 @@ export default function RatePage() {
                 i < stepIdx  ? 'bg-cyber-900/40 text-cyber-600 border-cyber-900/40' :
                                'bg-dark-700 text-gray-600 border-dark-600'
               }`}>
-                <span className="font-mono text-xs">{i < stepIdx ? '✓' : i + 1}</span>
+                {i < stepIdx
+                  ? <CheckCircle size={13} />
+                  : <span className="text-xs font-mono">{i + 1}</span>
+                }
                 <span className="hidden sm:block">{s}</span>
               </div>
               {i < STEPS.length - 1 && (
@@ -125,10 +125,10 @@ export default function RatePage() {
           ))}
         </div>
 
-        {/* Error banner */}
+        {/* Error */}
         {error && (
           <div className="glass-card p-4 border border-neon-pink/30 bg-neon-pink/5 mb-6 flex items-start gap-3">
-            <span className="text-xl flex-shrink-0">⚠️</span>
+            <AlertTriangle size={18} className="text-neon-pink flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-neon-pink font-semibold text-sm">Rating failed</p>
               <p className="text-gray-400 text-sm mt-0.5">{error}</p>
@@ -136,23 +136,23 @@ export default function RatePage() {
           </div>
         )}
 
-        {/* New badge unlock */}
+        {/* New badges */}
         {newBadges.length > 0 && (
           <div className="glass-card p-4 border border-yellow-500/30 bg-yellow-500/5 mb-6">
             <p className="text-yellow-400 font-bold text-sm mb-2">
-              🎉 Badge{newBadges.length > 1 ? 's' : ''} Unlocked!
+              Badge{newBadges.length > 1 ? 's' : ''} Unlocked!
             </p>
             <div className="flex flex-wrap gap-2">
               {newBadges.map(b => (
                 <span key={b.id} className="badge-pill border-yellow-500/40 text-yellow-300">
-                  {b.emoji} {b.name}
+                  {b.name}
                 </span>
               ))}
             </div>
           </div>
         )}
 
-        {/* ── Upload ── */}
+        {/* Upload */}
         {step === 'upload' && (
           <div className="space-y-5">
             <div
@@ -169,9 +169,11 @@ export default function RatePage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="text-6xl animate-bounce-gentle">{isDragActive ? '📥' : '📸'}</div>
+                  <div className="w-16 h-16 rounded-2xl bg-dark-600 border border-dark-500 flex items-center justify-center mx-auto">
+                    <Upload size={26} className={isDragActive ? 'text-cyber-400' : 'text-gray-500'} />
+                  </div>
                   <p className="text-white font-semibold text-lg">
-                    {isDragActive ? "Drop it like it's hot!" : 'Drop your robot photo here'}
+                    {isDragActive ? 'Drop it!' : 'Drop your robot photo here'}
                   </p>
                   <p className="text-gray-500 text-sm">or click to browse · JPG, PNG, WebP up to 10 MB</p>
                 </div>
@@ -179,7 +181,7 @@ export default function RatePage() {
             </div>
 
             <p className="text-center text-gray-600 text-xs">
-              💡 Works best with: robot builds, circuit boards, Arduino/ESP32 projects, 3D-printed bots, RC vehicles
+              Works best with: robot builds, circuit boards, Arduino/ESP32 projects, 3D-printed bots, RC vehicles
             </p>
 
             <button
@@ -188,12 +190,12 @@ export default function RatePage() {
               className="btn-primary w-full py-4 text-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
               id="rate-robot-btn"
             >
-              🤖 Rate This Robot!
+              Rate This Robot
             </button>
           </div>
         )}
 
-        {/* ── Rating (loading) ── */}
+        {/* Analyzing */}
         {step === 'rating' && (
           <div className="glass-card p-10 text-center">
             {preview && (
@@ -203,23 +205,14 @@ export default function RatePage() {
               </div>
             )}
             <div className="flex justify-center mb-5">
-              <div className="w-12 h-12 border-4 border-cyber-500 border-t-transparent rounded-full animate-spin" />
+              <Loader size={40} className="text-cyber-500 animate-spin" />
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">AI Judge is deliberating…</h2>
-            <p className="text-gray-400 text-sm">Analyzing wiring chaos, structural confidence, and sci-fi vibes…</p>
-            <div className="flex justify-center gap-2 mt-5">
-              {['⚡', '🔧', '🤖', '💡', '🚀'].map((e, i) => (
-                <span
-                  key={i}
-                  className="text-xl"
-                  style={{ animation: `bounce 1s ease-in-out ${i * 0.15}s infinite` }}
-                >{e}</span>
-              ))}
-            </div>
+            <h2 className="text-xl font-bold text-white mb-2">AI Judge is deliberating...</h2>
+            <p className="text-gray-400 text-sm">Analyzing wiring chaos, structural confidence, and sci-fi vibes...</p>
           </div>
         )}
 
-        {/* ── Result ── */}
+        {/* Result */}
         {step === 'result' && result && (
           <div className="space-y-5">
             {preview && (
@@ -229,20 +222,16 @@ export default function RatePage() {
             )}
             <ScoreCard
               result={result}
-              imageUrl={preview}
               onSubmitToGallery={gallerySubmitted ? null : handleSubmitToGallery}
             />
             {gallerySubmitted && (
-              <div className="glass-card p-4 border-cyber-500/30 text-center">
-                <span className="text-cyber-400 font-semibold">✅ Added to the public gallery!</span>
+              <div className="glass-card p-4 border-cyber-500/30 text-center flex items-center justify-center gap-2">
+                <CheckCircle size={16} className="text-cyber-400" />
+                <span className="text-cyber-400 font-semibold">Added to the public gallery!</span>
               </div>
             )}
-            <button
-              onClick={handleReset}
-              className="btn-secondary w-full"
-              id="rate-another-btn"
-            >
-              📸 Rate Another Robot
+            <button onClick={handleReset} className="btn-secondary w-full" id="rate-another-btn">
+              Rate Another Robot
             </button>
           </div>
         )}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getProfile, ALL_BADGES } from '../utils/profile';
 import { scoreColor } from '../utils/api';
 import { Link } from 'react-router-dom';
+import { User, Lock, Cpu } from 'lucide-react';
 
 export default function Profile() {
   const [profile, setProfile] = useState(null);
@@ -20,20 +21,22 @@ export default function Profile() {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="section-title">👤 Your Profile</h1>
-          <p className="text-gray-600 text-xs font-mono mt-1">ID: {profile.deviceId}</p>
+          <div className="w-16 h-16 rounded-2xl bg-cyber-500/10 border border-cyber-500/20 flex items-center justify-center mx-auto mb-4">
+            <User size={28} className="text-cyber-400" />
+          </div>
+          <h1 className="section-title">Your Profile</h1>
+          <p className="text-gray-600 text-xs mt-1">ID: {profile.deviceId}</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {[
-            { v: uploads.length,           label: 'Robots Rated', emoji: '🤖' },
-            { v: `${profile.streak || 0}d`, label: 'Streak',        emoji: '🔥' },
-            { v: avgScore ?? '—',           label: 'Avg Score',     emoji: '⭐' },
-            { v: earnedIds.length,          label: 'Badges',        emoji: '🏅' },
+            { v: uploads.length,            label: 'Robots Rated' },
+            { v: `${profile.streak || 0}d`, label: 'Streak' },
+            { v: avgScore ?? '—',           label: 'Avg Score' },
+            { v: earnedIds.length,          label: 'Badges Earned' },
           ].map(s => (
             <div key={s.label} className="glass-card p-4 text-center">
-              <div className="text-2xl mb-1">{s.emoji}</div>
               <div className="text-2xl font-black text-white">{s.v}</div>
               <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
             </div>
@@ -42,7 +45,7 @@ export default function Profile() {
 
         {/* Badges */}
         <div className="glass-card p-6 mb-6">
-          <h2 className="text-lg font-bold text-white mb-4">🏅 Badges</h2>
+          <h2 className="text-lg font-bold text-white mb-4">Badges</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {ALL_BADGES.map(badge => {
               const earned = earnedIds.includes(badge.id);
@@ -56,10 +59,17 @@ export default function Profile() {
                   }`}
                   title={badge.desc}
                 >
-                  <div className={`text-3xl mb-1 ${!earned ? 'grayscale opacity-40' : ''}`}>{badge.emoji}</div>
+                  {earned
+                    ? <div className="w-8 h-8 rounded-lg bg-cyber-500/20 flex items-center justify-center mx-auto mb-1">
+                        <div className="w-3 h-3 rounded-full bg-cyber-400" />
+                      </div>
+                    : <div className="w-8 h-8 rounded-lg bg-dark-600 flex items-center justify-center mx-auto mb-1">
+                        <Lock size={12} className="text-gray-600" />
+                      </div>
+                  }
                   <div className="text-xs font-semibold leading-tight">{badge.name}</div>
                   <div className="text-xs mt-1 opacity-60 leading-tight">{badge.desc}</div>
-                  {earned && <div className="badge-pill mt-2 justify-center w-full">Earned ✓</div>}
+                  {earned && <div className="badge-pill mt-2 text-center w-full justify-center">Earned</div>}
                 </div>
               );
             })}
@@ -68,12 +78,12 @@ export default function Profile() {
 
         {/* Upload history */}
         <div className="glass-card p-6">
-          <h2 className="text-lg font-bold text-white mb-4">📸 Upload History</h2>
+          <h2 className="text-lg font-bold text-white mb-4">Upload History</h2>
           {uploads.length === 0 ? (
             <div className="text-center py-10">
-              <div className="text-4xl mb-3">🤖</div>
+              <Cpu size={40} className="text-dark-500 mx-auto mb-3" />
               <p className="text-gray-400 mb-4">No uploads yet — get your first robot rated!</p>
-              <Link to="/rate" className="btn-primary" id="profile-rate-btn">Rate My First Robot →</Link>
+              <Link to="/rate" className="btn-primary" id="profile-rate-btn">Rate My First Robot</Link>
             </div>
           ) : (
             <div className="space-y-2">
@@ -82,7 +92,9 @@ export default function Profile() {
                   {u.imageUrl ? (
                     <img src={u.imageUrl} alt="robot" className="w-12 h-12 object-cover rounded-lg flex-shrink-0 ring-1 ring-white/10" />
                   ) : (
-                    <div className="w-12 h-12 bg-dark-600 rounded-lg flex items-center justify-center text-xl flex-shrink-0">🤖</div>
+                    <div className="w-12 h-12 bg-dark-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Cpu size={18} className="text-dark-400" />
+                    </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-white text-sm truncate">{u.robot_personality}</div>

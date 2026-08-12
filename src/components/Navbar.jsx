@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Home, Cpu, Trophy, Gamepad2, User, Info, Flame, ChevronRight } from 'lucide-react';
 import { getProfile } from '../utils/profile';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home', emoji: '🏠' },
-  { to: '/rate', label: 'Rate My Robot', emoji: '🤖' },
-  { to: '/gallery', label: 'Gallery', emoji: '🏆' },
-  { to: '/games', label: 'Mini-Games', emoji: '🎮' },
-  { to: '/profile', label: 'Profile', emoji: '👤' },
-  { to: '/about', label: 'About', emoji: 'ℹ️' },
+  { to: '/',        label: 'Home',         Icon: Home },
+  { to: '/rate',    label: 'Rate My Robot',Icon: Cpu },
+  { to: '/gallery', label: 'Gallery',      Icon: Trophy },
+  { to: '/games',   label: 'Mini-Games',   Icon: Gamepad2 },
+  { to: '/profile', label: 'Profile',      Icon: User },
+  { to: '/about',   label: 'About',        Icon: Info },
 ];
 
 export default function Navbar() {
@@ -34,11 +35,12 @@ export default function Navbar() {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-9 h-9 rounded-xl bg-cyber-500/20 border border-cyber-500/50 flex items-center justify-center
                            group-hover:bg-cyber-500/30 group-hover:border-cyber-400 transition-all duration-200">
-              <span className="text-lg">🤖</span>
+              <Cpu size={18} className="text-cyber-400" />
             </div>
             <span className="font-bold text-lg text-white group-hover:text-gradient transition-all duration-200 hidden sm:block">
               Rate My Robot
@@ -47,17 +49,18 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map(link => (
+            {NAV_LINKS.map(({ to, label, Icon }) => (
               <Link
-                key={link.to}
-                to={link.to}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location.pathname === link.to
+                key={to}
+                to={to}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  location.pathname === to
                     ? 'bg-cyber-500/20 text-cyber-400 border border-cyber-500/40'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="mr-1">{link.emoji}</span>{link.label}
+                <Icon size={14} />
+                {label}
               </Link>
             ))}
           </div>
@@ -66,7 +69,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {profile && profile.streak > 0 && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500/10 border border-orange-500/30 rounded-full">
-                <span className="text-sm">🔥</span>
+                <Flame size={13} className="text-orange-400" />
                 <span className="text-xs font-bold text-orange-400">{profile.streak}d streak</span>
               </div>
             )}
@@ -93,24 +96,22 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-dark-800/95 backdrop-blur-lg border-t border-white/5">
           <div className="px-4 py-3 space-y-1">
-            {NAV_LINKS.map(link => (
+            {NAV_LINKS.map(({ to, label, Icon }) => (
               <Link
-                key={link.to}
-                to={link.to}
+                key={to}
+                to={to}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  location.pathname === link.to
+                  location.pathname === to
                     ? 'bg-cyber-500/20 text-cyber-400'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="text-lg">{link.emoji}</span>{link.label}
+                <Icon size={16} />
+                {label}
               </Link>
             ))}
-            <Link
-              to="/rate"
-              className="btn-primary w-full text-center mt-2 block"
-            >
-              🚀 Rate a Robot
+            <Link to="/rate" className="btn-primary w-full text-center mt-2 block">
+              Rate a Robot
             </Link>
           </div>
         </div>

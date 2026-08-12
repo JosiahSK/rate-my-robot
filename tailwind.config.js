@@ -8,7 +8,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Outfit', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono: ['Outfit', 'sans-serif'],
       },
       colors: {
         cyber: {

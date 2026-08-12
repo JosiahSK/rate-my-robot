@@ -26,7 +26,7 @@ export default function App() {
         {/* Footer */}
         <footer className="border-t border-white/5 py-8 px-4 text-center">
           <p className="text-gray-600 text-sm">
-            🤖 Rate My Robot — Built for makers, by makers.
+            Rate My Robot — Built for makers, by makers.
             <span className="mx-2">·</span>
             <a href="https://github.com/JosiahSK/rate-my-robot" target="_blank" rel="noopener noreferrer"
                className="text-cyber-700 hover:text-cyber-500 transition-colors">

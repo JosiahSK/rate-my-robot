@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Lightbulb, Share2, Flag } from 'lucide-react';
 import { scoreGradient, scoreColor } from '../utils/api';
 
 const METRICS = [
-  { key: 'wiring_chaos_score',          label: 'Wiring Chaos',          emoji: '⚡' },
-  { key: 'structural_confidence_score', label: 'Structural Confidence', emoji: '🏗️' },
-  { key: 'sci_fi_factor_score',         label: 'Sci-Fi Factor',         emoji: '🚀' },
+  { key: 'wiring_chaos_score',          label: 'Wiring Chaos',          symbol: '~' },
+  { key: 'structural_confidence_score', label: 'Structural Confidence', symbol: '#' },
+  { key: 'sci_fi_factor_score',         label: 'Sci-Fi Factor',         symbol: '*' },
 ];
 
 function AnimatedMeter({ value, gradient, delay = 0 }) {
@@ -41,7 +42,7 @@ function AnimatedNumber({ target, delay = 0 }) {
   return <span>{current}</span>;
 }
 
-export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
+export default function ScoreCard({ result, onSubmitToGallery }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 80);
@@ -50,12 +51,7 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
 
   if (!result) return null;
 
-  const overallEmoji =
-    result.overall_score >= 85 ? '🏆' :
-    result.overall_score >= 70 ? '⭐' :
-    result.overall_score >= 50 ? '🔧' : '💀';
-
-  const shareText = `My robot scored ${result.overall_score}/100 — "${result.one_liner}" 🤖\nhttps://josiahsk.github.io/rate-my-robot/`;
+  const shareText = `My robot scored ${result.overall_score}/100 — "${result.one_liner}"\nhttps://josiahsk.github.io/rate-my-robot/`;
 
   const handleShare = () => {
     if (navigator.share) {
@@ -67,7 +63,7 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
   };
 
   const handleChallenge = () => {
-    const text = `I just got my robot rated ${result.overall_score}/100 🤖 Can yours beat it?\nhttps://josiahsk.github.io/rate-my-robot/`;
+    const text = `My robot scored ${result.overall_score}/100 — can yours beat it?\nhttps://josiahsk.github.io/rate-my-robot/`;
     if (navigator.share) {
       navigator.share({ title: 'Robot Challenge', text });
     } else {
@@ -78,12 +74,13 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
 
   return (
     <div className={`space-y-5 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+
       {/* Main result banner */}
       <div className="glass-card p-6 text-center relative overflow-hidden holo-card" id="score-result-card">
         <div className="absolute inset-0 bg-gradient-to-br from-cyber-900/20 to-dark-800/20" />
         <div className="relative z-10">
-          <div className="text-5xl mb-3 animate-bounce-gentle">{overallEmoji}</div>
-          <h2 className="text-2xl font-black text-gradient mb-2">{result.robot_personality}</h2>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">Robot Personality</p>
+          <h2 className="text-2xl font-black text-gradient mb-3">{result.robot_personality}</h2>
           <p className="text-gray-300 italic text-base mb-5">"{result.one_liner}"</p>
           <div className="flex justify-center items-baseline gap-2">
             <span className={`text-7xl font-black score-reveal ${scoreColor(result.overall_score)}`}>
@@ -102,9 +99,7 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
           {METRICS.map((m, i) => (
             <div key={m.key}>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-sm font-medium text-gray-300">
-                  {m.emoji} {m.label}
-                </span>
+                <span className="text-sm font-medium text-gray-300">{m.label}</span>
                 <span className={`text-sm font-bold tabular-nums ${scoreColor(result[m.key])}`}>
                   <AnimatedNumber target={result[m.key]} delay={i * 200} />/100
                 </span>
@@ -122,9 +117,9 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
       {/* Constructive tip */}
       <div className="glass-card p-5 border-l-4 border-cyber-500">
         <div className="flex gap-3">
-          <span className="text-2xl flex-shrink-0">💡</span>
+          <Lightbulb size={20} className="text-cyber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-xs font-bold text-cyber-400 uppercase tracking-wider mb-1">Pro Tip from your Judge</p>
+            <p className="text-xs font-bold text-cyber-400 uppercase tracking-wider mb-1">Pro Tip</p>
             <p className="text-gray-300 text-sm leading-relaxed">{result.constructive_tip}</p>
           </div>
         </div>
@@ -133,23 +128,27 @@ export default function ScoreCard({ result, imageUrl, onSubmitToGallery }) {
       {/* Actions */}
       <div className="grid grid-cols-2 gap-3">
         <button onClick={handleShare} className="btn-primary flex items-center justify-center gap-2" id="share-result-btn">
-          <span>📤</span> Share
+          <Share2 size={15} /> Share Result
         </button>
         {onSubmitToGallery ? (
           <button onClick={onSubmitToGallery} className="btn-secondary flex items-center justify-center gap-2" id="submit-gallery-btn">
-            <span>🖼️</span> Gallery
+            Add to Gallery
           </button>
         ) : (
           <button onClick={handleChallenge} className="btn-secondary flex items-center justify-center gap-2">
-            <span>🏁</span> Challenge
+            <Flag size={15} /> Challenge
           </button>
         )}
       </div>
 
       {/* Challenge friend */}
       <div className="text-center">
-        <button onClick={handleChallenge} className="text-cyber-400 hover:text-cyber-300 font-semibold text-sm hover:underline transition-all" id="challenge-friend-btn">
-          🏁 Challenge a friend to beat your score →
+        <button
+          onClick={handleChallenge}
+          className="text-cyber-400 hover:text-cyber-300 font-semibold text-sm hover:underline transition-all"
+          id="challenge-friend-btn"
+        >
+          Challenge a friend to beat your score
         </button>
       </div>
     </div>

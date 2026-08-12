@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { voteOnRobot, scoreColor } from '../utils/api';
 
 export default function RobotCard({ entry, rank }) {
@@ -18,7 +19,6 @@ export default function RobotCard({ entry, rank }) {
       stored[entry.id] = direction;
       localStorage.setItem('rmr_votes', JSON.stringify(stored));
     } catch {
-      // Optimistic update on network fail
       setVotes(v => v + (direction === 'up' ? 1 : -1));
       setVoted(direction);
     } finally {
@@ -27,9 +27,9 @@ export default function RobotCard({ entry, rank }) {
   };
 
   const rankLabel =
-    rank === 1 ? '🥇' :
-    rank === 2 ? '🥈' :
-    rank === 3 ? '🥉' :
+    rank === 1 ? '1st' :
+    rank === 2 ? '2nd' :
+    rank === 3 ? '3rd' :
     rank ? `#${rank}` : null;
 
   return (
@@ -45,11 +45,11 @@ export default function RobotCard({ entry, rank }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-dark-700 to-dark-800">
-            <span className="text-6xl opacity-40">🤖</span>
+            <span className="text-3xl font-bold text-dark-500 tracking-widest">BOT</span>
           </div>
         )}
         {rankLabel && (
-          <div className="absolute top-2 left-2 bg-dark-900/80 backdrop-blur-sm px-2 py-1 rounded-lg text-sm font-bold">
+          <div className="absolute top-2 left-2 bg-dark-900/80 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-white">
             {rankLabel}
           </div>
         )}
@@ -66,12 +66,12 @@ export default function RobotCard({ entry, rank }) {
         {/* Mini sub-scores */}
         <div className="grid grid-cols-3 gap-1.5 mb-3">
           {[
-            { label: '⚡', value: entry.wiring_chaos_score, title: 'Wiring' },
-            { label: '🏗️', value: entry.structural_confidence_score, title: 'Structure' },
-            { label: '🚀', value: entry.sci_fi_factor_score, title: 'Sci-Fi' },
+            { label: 'Wiring',    value: entry.wiring_chaos_score },
+            { label: 'Structure', value: entry.structural_confidence_score },
+            { label: 'Sci-Fi',    value: entry.sci_fi_factor_score },
           ].map(s => (
-            <div key={s.label} className="text-center bg-dark-700/50 rounded-lg p-1.5" title={s.title}>
-              <div className="text-xs">{s.label}</div>
+            <div key={s.label} className="text-center bg-dark-700/50 rounded-lg p-1.5">
+              <div className="text-xs text-gray-500">{s.label}</div>
               <div className={`text-xs font-bold tabular-nums ${scoreColor(s.value)}`}>{s.value}</div>
             </div>
           ))}
@@ -90,7 +90,8 @@ export default function RobotCard({ entry, rank }) {
                   : 'bg-dark-700 text-gray-400 hover:text-cyber-400 hover:bg-cyber-500/10 disabled:opacity-40 disabled:cursor-not-allowed'
               }`}
             >
-              ⬆ <span className="tabular-nums">{votes > 0 ? votes : ''}</span>
+              <ThumbsUp size={13} />
+              <span className="tabular-nums">{votes > 0 ? votes : ''}</span>
             </button>
             <button
               onClick={() => handleVote('down')}
@@ -102,7 +103,7 @@ export default function RobotCard({ entry, rank }) {
                   : 'bg-dark-700 text-gray-400 hover:text-neon-pink hover:bg-neon-pink/10 disabled:opacity-40 disabled:cursor-not-allowed'
               }`}
             >
-              ⬇
+              <ThumbsDown size={13} />
             </button>
           </div>
           <span className="text-xs text-gray-600">
